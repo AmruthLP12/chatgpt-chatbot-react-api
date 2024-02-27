@@ -1,6 +1,6 @@
 import { useState } from "react";
-import "./App.css";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import { chatGPT_API } from "./helper/Helper";
 
 import {
   MainContainer,
@@ -11,7 +11,6 @@ import {
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
 
-const API_KEY = "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"
 
 function App() {
   const [thinking, setThinking] = useState(false);
@@ -41,11 +40,11 @@ function App() {
     processMessageToChatGPT(newMessages);
   };
 
-  async function processMessageToChatGPT(chatmessages) {
+  async function processMessageToChatGPT(chatMessages) {
 // chat Messages { sender :"user" or "ChatGPT", message : "the message content here"}
 // api Messages { role: "user" or "assistant" content :"the message content here"}
 
-    let apiMessages = chatmessages.map((messageObject) => {
+    let apiMessages = chatMessages.map((messageObject) => {
       let role = '';
       if(messageObject.sender === "ChatGPT"){
         role = "assistant";
@@ -61,6 +60,7 @@ function App() {
     const systemMessage ={
       role : "system",
       content:"Explain all concepts like I am 10 years old."
+      // content:"Explain like a pirate."
     }
 
     const apiRequestBody = {
@@ -74,7 +74,7 @@ function App() {
     await fetch("https://api.openai.com/v1/chat/completions",{
       method:"POST",
       headers: {
-        "Authorization":"Bearer " + API_KEY,
+        "Authorization":"Bearer " + chatGPT_API,
         "Content-Type": "application/json"
       },
       body:  JSON.stringify(apiRequestBody)
@@ -82,8 +82,16 @@ function App() {
     ).then((data)=>{
       return data.json();
     }).then((data)=>{
-      console.log(data)
-    })
+      console.log(data);
+      console.log(data.choices[0].message.content);
+      setMessages([
+        ...chatMessages,{
+          message: data.choices[0].message.content,
+          sender: "ChatGPT"
+        }
+      ]);
+      setThinking(false);
+    });
 
   }
 
