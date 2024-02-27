@@ -52,6 +52,8 @@ You can customize the chat interface, styling, and message processing logic acco
 
 This application utilizes the following technologies and libraries:
 
+Vite
+
 React
 
 Chat UI Kit React
