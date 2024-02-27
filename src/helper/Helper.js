@@ -1,0 +1,1 @@
+export const chatGPT_API = "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";
